@@ -1,0 +1,15 @@
+Answer for Mean and median number of steps taken each day
+
+mean_raw<-mean(totalStepsByDay$steps)
+mean_raw
+[1] 10766.19
+
+median_raw<-median(totalStepsByDay$steps)
+median_raw
+[1] 10765
+
+
+Answer for The 5-minute interval that, on average, contains the maximum number of steps
+
+averageStepsbyInterval[which.max(averageStepsbyInterval[,2]),1]
+[1] 835
