@@ -1,0 +1,53 @@
+<hr>
+<p>title: &quot;Reproducible Research: Peer Assessment 1&quot;
+Author : Magesh
+output: 
+  html_document:</p>
+<pre><code><span class="hljs-string">keep_md:</span> <span class="hljs-literal">true</span>
+</code></pre><hr>
+<h2 id="loading-and-preprocessing-the-data">Loading and preprocessing the data</h2>
+<p>if(!file.exists(&quot;getdata-projectfiles-UCI HAR Dataset.zip&quot;)) {
+  temp &lt;- tempfile()
+  download.file(&quot;<a href="http://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip&quot;,temp">http://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip&quot;,temp</a>)
+  unzip(temp)
+  unlink(temp)
+}</p>
+<p>activity&lt;-read.csv(&quot;activity.csv&quot;)
+head(activity)</p>
+<h2 id="what-is-mean-total-number-of-steps-taken-per-day-">What is mean total number of steps taken per day?</h2>
+<p>totalStepsByDay&lt;-aggregate(steps~date, activity, sum)
+mean_raw&lt;-mean(totalStepsByDay$steps)
+mean_raw</p>
+<h2 id="what-is-the-average-daily-activity-pattern-">What is the average daily activity pattern?</h2>
+<p>averageStepsbyInterval[which.max(averageStepsbyInterval[,2]),1]</p>
+<h2 id="imputing-missing-values">Imputing missing values</h2>
+<p>missingIndex&lt;-is.na(activity[,1])</p>
+<p>m&lt;-mean(averageStepsbyInterval$steps)</p>
+<p>activity1&lt;-activity
+activity1[missingIndex,1]&lt;-m
+head(activity1)</p>
+<h2 id="are-there-differences-in-activity-patterns-between-weekdays-and-weekends-">Are there differences in activity patterns between weekdays and weekends?</h2>
+<p>activity1$date&lt;-as.Date(activity1$date)</p>
+<p>activity2&lt;-activity1%&gt;%
+  mutate(dayType= ifelse(weekdays(activity1$date)==&quot;Saturday&quot; | weekdays(activity1$date)==&quot;Sunday&quot;, &quot;Weekend&quot;, &quot;Weekday&quot;))
+head(activity2)</p>
+<p>averageStepByDayTypeAndInterval&lt;-activity2 %&gt;%
+  group_by(dayType, interval) %&gt;%
+  summarize(averageStepByDay=sum(steps))</p>
+<p>head(averageStepByDayTypeAndInterval)</p>
+<h2 id="plot-codes">Plot Codes</h2>
+<h2 id="histogram-of-the-total-number-of-steps-taken-each-day">Histogram of the total number of steps taken each day</h2>
+<p>hist(totalStepsByDay$steps, xlab=&quot;Class of Total Number of Steps per day&quot;, ylab=&quot;Number of Days&quot;, main=&quot;Total Number of Steps taken each day&quot;)</p>
+<h2 id="time-series-plot-of-the-average-number-of-steps-taken">Time series plot of the average number of steps taken</h2>
+<p>averageStepsbyInterval&lt;-aggregate(steps~interval, activity, mean)
+with(averageStepsbyInterval, plot(interval, steps, type = &quot;l&quot;))</p>
+<h2 id="histogram-of-the-total-number-of-steps-taken-each-day-after-missing-values-are-imputed">Histogram of the total number of steps taken each day after missing values are imputed</h2>
+<p>totalStepsByDay1&lt;-aggregate(steps~date, activity1, sum)
+hist(totalStepsByDay1$steps, xlab=&quot;Class of Total Number of Steps per day&quot;, ylab=&quot;Number of Days&quot;, main=&quot;Number of Steps taken each day after missing values are imputed&quot;)</p>
+<h2 id="panel-plot-comparing-the-average-number-of-steps-taken-per-5-minute-interval-across-weekdays-and-weekends">Panel plot comparing the average number of steps taken per 5-minute interval across weekdays and weekends</h2>
+<p>library(lattice)
+with(averageStepByDayTypeAndInterval, 
+     xyplot(averageStepByDay ~ interval | dayType, 
+            type = &quot;l&quot;,<br>            main = &quot;Total Number of Steps within Intervals by dayType&quot;,
+            xlab = &quot;Daily Intervals&quot;,
+            ylab = &quot;Average Number of Steps&quot;))</p>
